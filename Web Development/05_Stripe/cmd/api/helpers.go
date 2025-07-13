@@ -5,6 +5,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
@@ -65,8 +67,7 @@ func (app *application) badRequest(w http.ResponseWriter, r *http.Request, err e
 	return nil
 }
 
-//
-
+// invalidCredentials sends a JSON response with an error message for unauthorized access
 func (app *application) invalidCredentials(w http.ResponseWriter) error {
 	var payload struct {
 		Error   bool   `json:"error"`
@@ -83,4 +84,19 @@ func (app *application) invalidCredentials(w http.ResponseWriter) error {
 	}
 
 	return nil
+}
+
+// passwordMatch checks if the provided password matches the stored hash
+func (app *application) passwordMatch(storedHash, providedPassword string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(providedPassword))
+	if err != nil {
+		switch {
+		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			return false, nil
+		default:
+			app.errorLog.Println("Error comparing password:", err)
+			return false, err
+		}
+	}
+	return true, nil
 }
