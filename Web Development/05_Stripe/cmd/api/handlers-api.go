@@ -257,6 +257,17 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	passwordMatch, err := app.passwordMatch(user.Password, userInput.Password)
+	if err != nil {
+		app.errorLog.Println("Error comparing password:", err)
+		app.invalidCredentials(w)
+		return
+	}
+	if !passwordMatch {
+		app.invalidCredentials(w)
+		return
+	}
+
 	var payload struct {
 		Error   bool   `json:"error"`
 		Message string `json:"message"`
