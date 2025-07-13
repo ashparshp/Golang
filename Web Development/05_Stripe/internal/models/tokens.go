@@ -14,10 +14,10 @@ const (
 // Token is the type for authentication tokens
 type Token struct {
 	PlainText string    `json:"token"`
-	UserID    int64     `json:"_"`
+	UserID    int64     `json:"-"`
 	Hash      []byte    `json:"-"`
 	Expiry    time.Time `json:"expiry"`
-	Scope     string    `json:"_"`
+	Scope     string    `json:"-"`
 }
 
 // GenerateToken creates a new token for the user
