@@ -259,16 +259,11 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 	payload.Error = false
 	payload.Message = "Authentication successful"
 
-	out, err := json.MarshalIndent(payload, "", "   ")
+	err = app.writeJSON(w, http.StatusOK, payload)
 	if err != nil {
 		app.errorLog.Println(err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(out)
-	if err != nil {
-		app.errorLog.Println(err)
-		return
-	}
+
+	app.infoLog.Println("User authenticated:", userInput.Email)
 }
