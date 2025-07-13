@@ -238,3 +238,17 @@ func (app *application) SaveOrder(order models.Order) (int, error) {
 	}
 	return id, nil
 }
+
+func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) {
+	var userInput struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&userInput)
+	if err != nil {
+		app.errorLog.Println(err)
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+}
