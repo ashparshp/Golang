@@ -22,3 +22,25 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, data in
 	}
 	return nil
 }
+
+func (app *application) badRequest(w http.ResponseWriter, r *http.Request, err error) error {
+	var payload struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Error = true
+	payload.Message = err.Error()
+	out, err := json.MarshalIndent(payload, "", "   ")
+	if err != nil {
+		app.errorLog.Println(err)
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	_, err = w.Write(out)
+	if err != nil {
+		app.errorLog.Println(err)
+	}
+	return nil
+}
