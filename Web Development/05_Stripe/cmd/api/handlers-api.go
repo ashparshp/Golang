@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -268,19 +269,26 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	// Generate a token for the user
+	token, err := models.GenerateToken(user.ID, 24*time.Hour, models.ScopeAuthentication)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
 	var payload struct {
-		Error   bool   `json:"error"`
-		Message string `json:"message"`
+		Error   bool          `json:"error"`
+		Message string        `json:"message"`
+		Token   *models.Token `json:"authentication_token"`
 	}
 
 	payload.Error = false
-	payload.Message = "Authentication successful"
+	payload.Message = fmt.Sprintf("User %s authenticated successfully", userInput.Email)
+	payload.Token = token
 
 	err = app.writeJSON(w, http.StatusOK, payload)
 	if err != nil {
 		app.errorLog.Println(err)
 		return
 	}
-
-	app.infoLog.Println("User authenticated:", userInput.Email)
 }

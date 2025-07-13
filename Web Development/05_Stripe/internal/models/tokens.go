@@ -21,7 +21,7 @@ type Token struct {
 }
 
 // GenerateToken creates a new token for the user
-func (m *DBModel) GenerateToken(userID int, ttl time.Duration, scope string) (*Token, error) {
+func GenerateToken(userID int, ttl time.Duration, scope string) (*Token, error) {
 	token := &Token{
 		UserID: int64(userID),
 		Scope:  scope,
