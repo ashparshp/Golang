@@ -245,10 +245,30 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 		Password string `json:"password"`
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&userInput)
+	err := app.readJSON(w, r, &userInput)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	var payload struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Error = false
+	payload.Message = "Authentication successful"
+
+	out, err := json.MarshalIndent(payload, "", "   ")
 	if err != nil {
 		app.errorLog.Println(err)
-		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(out)
+	if err != nil {
+		app.errorLog.Println(err)
 		return
 	}
 }
