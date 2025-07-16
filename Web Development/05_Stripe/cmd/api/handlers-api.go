@@ -301,6 +301,35 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+func (app *application) authenticateToken(r *http.Request) (*models.User, error) {
+	var u models.User
+
+	
+
+	return &u, nil
+
+}
+
 func (app *application) CheckAuthentication(w http.ResponseWriter, r *http.Request) {
-	app.invalidCredentials(w)
+	// validate the token
+	user, err := app.authenticateToken(r)
+	if err != nil {
+		app.errorLog.Println("Error authenticating token:", err)
+		app.invalidCredentials(w)
+		return
+	}
+
+	var payload struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Error = false
+	payload.Message = fmt.Sprintf("User %s is authenticated", user.Email)
+
+	err = app.writeJSON(w, http.StatusOK, payload)
+	if err != nil {
+		app.errorLog.Println("Error writing JSON response:", err)
+		return
+	}
 }
