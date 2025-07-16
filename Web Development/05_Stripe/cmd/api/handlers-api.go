@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ashparshp/go-stripe/internal/cards"
@@ -304,7 +306,19 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 func (app *application) authenticateToken(r *http.Request) (*models.User, error) {
 	var u models.User
 
-	
+	autherizationHeader := r.Header.Get("Authorization")
+	if autherizationHeader == "" {
+		return nil, errors.New("missing authorization header")
+	}
+
+	headerParts := strings.Split(autherizationHeader, " ")
+	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		return nil, errors.New("invalid authorization header format")
+	}
+	tokenString := headerParts[1]
+	if len(tokenString) != 26 {
+		return nil, errors.New("invalid token length")
+	}
 
 	return &u, nil
 
