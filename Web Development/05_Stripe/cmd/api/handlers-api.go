@@ -335,10 +335,10 @@ func (app *application) CheckAuthentication(w http.ResponseWriter, r *http.Reque
 		app.invalidCredentials(w)
 		return
 	}
-	
+
 	// valid user
 	var payload struct {
-		Error bool `json:"error"`
+		Error   bool   `json:"error"`
 		Message string `json:"message"`
 	}
 	payload.Error = false
