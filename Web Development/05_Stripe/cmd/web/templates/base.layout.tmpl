@@ -97,6 +97,7 @@
             .then(function(response) {
               if (response.error === true) {
                 console.log("Not authenticated, redirecting to login");
+                location.href = '/login';
               } else {
                 console.log("Authenticated successfully");
               }
