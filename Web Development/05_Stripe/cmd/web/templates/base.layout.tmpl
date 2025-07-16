@@ -94,7 +94,7 @@
 
           fetch("{{.API}}/api/is-authenticated", requestOptions)
             .then(response => response.json())
-            .then(response => {
+            .then(function(response) {
               if (response.error === true) {
                 console.log("Not authenticated, redirecting to login");
               } else {
