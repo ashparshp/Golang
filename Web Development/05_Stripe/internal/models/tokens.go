@@ -30,7 +30,7 @@ func GenerateToken(userID int, ttl time.Duration, scope string) (*Token, error) 
 		Expiry: time.Now().Add(ttl),
 	}
 
-	randBytes := make([]byte, 32)
+	randBytes := make([]byte, 16)
 	_, err := rand.Read(randBytes)
 	if err != nil {
 		return nil, err
