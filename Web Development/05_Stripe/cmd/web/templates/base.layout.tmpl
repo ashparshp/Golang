@@ -77,6 +77,32 @@
           localStorage.removeItem('token_expiry');
           location.href = '/login';
       }
+
+      function checkAuth() {
+        if (!localStorage.getItem('token')) {
+          location.href = '/login';
+        } else {
+          let token = localStorage.getItem('token');
+          const myHeaders = new Headers();
+          myHeaders.append("content-type", "application/json");
+          myHeaders.append("Authorization", "Bearer " + token);
+
+          const requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+          };
+
+          fetch("{{.API}}/api/is-authenticated", requestOptions)
+            .then(response => response.json())
+            .then(response => {
+              if (response.error === true) {
+                console.log("Not authenticated, redirecting to login");
+              } else {
+                console.log("Authenticated successfully");
+              }
+          })
+        }
+      }
   </script>
   
   {{block "js" .}}{{end}}
