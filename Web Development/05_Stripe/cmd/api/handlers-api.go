@@ -304,7 +304,6 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) authenticateToken(r *http.Request) (*models.User, error) {
-	var u models.User
 
 	autherizationHeader := r.Header.Get("Authorization")
 	if autherizationHeader == "" {
@@ -320,7 +319,12 @@ func (app *application) authenticateToken(r *http.Request) (*models.User, error)
 		return nil, errors.New("invalid token length")
 	}
 
-	return &u, nil
+	user, err := app.DB.GetUserForToken(tokenString)
+	if err != nil {
+		errors.New("error retrieving user for token")
+	}
+
+	return user, nil
 
 }
 
