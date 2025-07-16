@@ -304,50 +304,44 @@ func (app *application) CreateAuthToken(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) authenticateToken(r *http.Request) (*models.User, error) {
-
-	autherizationHeader := r.Header.Get("Authorization")
-	if autherizationHeader == "" {
-		return nil, errors.New("missing authorization header")
+	authorizationHeader := r.Header.Get("Authorization")
+	if authorizationHeader == "" {
+		return nil, errors.New("no authorization header received")
 	}
 
-	headerParts := strings.Split(autherizationHeader, " ")
+	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return nil, errors.New("invalid authorization header format")
-	}
-	tokenString := headerParts[1]
-	if len(tokenString) != 26 {
-		return nil, errors.New("invalid token length")
+		return nil, errors.New("no authorization header received")
 	}
 
-	user, err := app.DB.GetUserForToken(tokenString)
+	token := headerParts[1]
+	if len(token) != 26 {
+		return nil, errors.New("authentication token wrong size")
+	}
+
+	// get the user from the tokens table
+	user, err := app.DB.GetUserForToken(token)
 	if err != nil {
-		errors.New("error retrieving user for token")
+		return nil, errors.New("no matching user found")
 	}
 
 	return user, nil
-
 }
 
 func (app *application) CheckAuthentication(w http.ResponseWriter, r *http.Request) {
-	// validate the token
+	// validate the token, and get associated user
 	user, err := app.authenticateToken(r)
 	if err != nil {
-		app.errorLog.Println("Error authenticating token:", err)
 		app.invalidCredentials(w)
 		return
 	}
-
+	
+	// valid user
 	var payload struct {
-		Error   bool   `json:"error"`
+		Error bool `json:"error"`
 		Message string `json:"message"`
 	}
-
 	payload.Error = false
-	payload.Message = fmt.Sprintf("User %s is authenticated", user.Email)
-
-	err = app.writeJSON(w, http.StatusOK, payload)
-	if err != nil {
-		app.errorLog.Println("Error writing JSON response:", err)
-		return
-	}
+	payload.Message = fmt.Sprintf("authenticated user %s", user.Email)
+	app.writeJSON(w, http.StatusOK, payload)
 }
