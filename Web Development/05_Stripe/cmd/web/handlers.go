@@ -382,3 +382,10 @@ func (app *application) Logout(w http.ResponseWriter, r *http.Request) {
 	app.Session.RenewToken(r.Context())
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
+
+// ForgotPassword displays the forgot password page
+func (app *application) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	if err := app.renderTemplate(w, r, "forgot-password", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
