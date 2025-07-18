@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // DBModel is the type for database connection values
@@ -265,4 +267,31 @@ func (m *DBModel) GetUserByEmail(email string) (User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (m *DBModel) Authenticate(email, password string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var id int
+	var hashedPassword string
+
+	row := m.DB.QueryRowContext(ctx, `
+		select id, password from users where email = ?`, strings.ToLower(email))
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil // User not found
+		}
+		return 0, err // Handle other errors
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, nil // Password does not match
+	}
+	if err != nil {
+		return 0, err // Handle other errors
+	}
+	return id, nil // Authentication successful, return user ID
 }

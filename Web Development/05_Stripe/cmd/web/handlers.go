@@ -340,3 +340,24 @@ func (app *application) LoginPage(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 	}
 }
+
+// PostLoginPage handles the login form submission
+func (app *application) PostLoginPage(w http.ResponseWriter, r *http.Request) {
+	app.Session.RenewToken(r.Context())
+
+	if err := r.ParseForm(); err != nil {
+		app.errorLog.Println("Error parsing form:", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	email := r.Form.Get("email")
+	password := r.Form.Get("password")
+	if email == "" || password == "" {
+		app.errorLog.Println("Email or password is empty")
+		http.Error(w, "Email and password are required", http.StatusBadRequest)
+		return
+	}
+
+	
+}
