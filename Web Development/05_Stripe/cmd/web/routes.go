@@ -29,7 +29,7 @@ func (app *application) routes() http.Handler {
 
 	mux.Get("/login", app.LoginPage)
 	mux.Post("/login", app.PostLoginPage)
-	mux.Post("/logout", app.Logout)
+	mux.Get("/logout", app.Logout)
 
 	fileServer := http.FileServer(http.Dir("./static"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
