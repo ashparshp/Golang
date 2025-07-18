@@ -359,5 +359,19 @@ func (app *application) PostLoginPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
+	id, err := app.DB.Authenticate(email, password)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		app.errorLog.Println("Authentication failed:", err)
+		return
+	}
+
+	if id == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		app.errorLog.Println("Authentication failed: user not found")
+		return
+	}
+
+	app.Session.Put(r.Context(), "userID", id)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
