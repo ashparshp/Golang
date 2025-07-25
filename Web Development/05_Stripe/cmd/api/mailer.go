@@ -58,6 +58,8 @@ func (app *application) SendMail(from, to, subject, tmpl string, data any) error
 	if err != nil {
 		return fmt.Errorf("error connecting to SMTP server: %w", err)
 	}
+	defer smtpClient.Close()
+
 	email := mail.NewMSG()
 	email.SetFrom(from).
 		AddTo(to).
