@@ -39,5 +39,7 @@ func (app *application) SendMail(from, to, subject, tmpl string, data any) error
 
 	plainMessage := plainTpl.String()
 
+	app.infoLog.Println(formattedMessage, plainMessage)
+
 	return nil
 }
