@@ -14,6 +14,7 @@ import (
 	"github.com/ashparshp/go-stripe/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
 	"github.com/stripe/stripe-go/v72"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type stripePayload struct {
@@ -470,6 +471,57 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 
 	resp.Error = false
 	resp.Message = fmt.Sprintf("Password reset email sent to %s", payload.Email)
+	err = app.writeJSON(w, http.StatusCreated, resp)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
+
+func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	var payload struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+	if payload.Email == "" || payload.Password == "" {
+		app.badRequest(w, r, errors.New("email and password are required"))
+		return
+	}
+
+	user, err := app.DB.GetUserByEmail(payload.Email)
+	if err != nil {
+		app.invalidCredentials(w)
+		return
+	}
+
+	// Hash the new password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(payload.Password), 12)
+	if err != nil {
+		app.errorLog.Println("Error hashing password:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	// Update the user's password in the database
+	err = app.DB.UpdateUserPassword(user, string(hashedPassword))
+	if err != nil {
+		app.errorLog.Println("Error updating user password:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+	resp.Message = "Password reset successfully"
 	err = app.writeJSON(w, http.StatusCreated, resp)
 	if err != nil {
 		app.errorLog.Println("Error writing response:", err)
