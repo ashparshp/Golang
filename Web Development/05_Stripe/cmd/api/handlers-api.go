@@ -11,6 +11,7 @@ import (
 
 	"github.com/ashparshp/go-stripe/internal/cards"
 	"github.com/ashparshp/go-stripe/internal/models"
+	"github.com/ashparshp/go-stripe/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -423,14 +424,38 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	_, err = app.DB.GetUserByEmail(payload.Email)
+	if err != nil {
+		var resp struct {
+			Error   bool   `json:"error"`
+			Message string `json:"message"`
+		}
+		resp.Error = true
+		resp.Message = fmt.Sprintf("No user found with email %s", payload.Email)
+		app.writeJSON(w, http.StatusNotFound, resp)
+		return
+	}
+
+	link := fmt.Sprintf("%s/reset-password?email=%s", app.config.frontend, payload.Email)
+	sign := urlsigner.Signer{
+		Secret: []byte(app.config.secretkey),
+	}
+
+	signedLink := sign.GenerateTokenFromString(link)
+	if signedLink == "" {
+		app.errorLog.Println("Error generating signed link")
+		app.badRequest(w, r, errors.New("error generating signed link"))
+		return
+	}
+
 	var data struct {
 		Link string
 	}
 
-	data.Link = "https://google.com"
+	data.Link = link
 
 	// send mail
-
+	
 	err = app.SendMail("info@widgets.com", "info@widgets.com", "Password Reset Request", "password-reset", data)
 	if err != nil {
 		app.errorLog.Println("Error sending password reset email:", err)
