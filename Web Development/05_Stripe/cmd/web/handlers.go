@@ -389,3 +389,10 @@ func (app *application) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 		app.errorLog.Println(err)
 	}
 }
+
+// ShowResetPassword displays the reset password page
+func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request) {
+	if err := app.renderTemplate(w, r, "reset-password", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
