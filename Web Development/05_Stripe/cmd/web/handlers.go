@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/ashparshp/go-stripe/internal/cards"
 	"github.com/ashparshp/go-stripe/internal/models"
+	"github.com/ashparshp/go-stripe/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -392,7 +394,18 @@ func (app *application) ForgotPassword(w http.ResponseWriter, r *http.Request) {
 
 // ShowResetPassword displays the reset password page
 func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request) {
-	if err := app.renderTemplate(w, r, "reset-password", &templateData{}); err != nil {
-		app.errorLog.Println(err)
+	theURL := r.RequestURI
+	testURL := fmt.Sprintf("%s%s", app.config.frontend, theURL)
+
+	signer := urlsigner.Signer{
+		Secret: []byte(app.config.secretkey),
+	}
+
+	valid := signer.VerifyToken(testURL)
+	if !valid {
+		w.Write([]byte("Invalid or expired link"))
+		return
+	} else {
+		w.Write([]byte("Valid link, proceed to reset password"))
 	}
 }
