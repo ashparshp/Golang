@@ -453,7 +453,7 @@ func (app *application) SendPasswordResetEmail(w http.ResponseWriter, r *http.Re
 		Link string
 	}
 
-	data.Link = link
+	data.Link = signedLink
 
 	// send mail
 
