@@ -407,6 +407,13 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	expired := signer.Expired(testURL, 60)
+	if expired {
+		app.errorLog.Println("Reset password token has expired")
+		http.Redirect(w, r, "/forgot-password", http.StatusSeeOther)
+		return
+	}
+
 	data := make(map[string]interface{})
 	data["email"] = r.URL.Query().Get("email")
 
