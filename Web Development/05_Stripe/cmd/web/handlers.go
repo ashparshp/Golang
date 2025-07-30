@@ -403,9 +403,15 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 
 	valid := signer.VerifyToken(testURL)
 	if !valid {
-		w.Write([]byte("Invalid or expired link"))
+		app.errorLog.Println("Invalid reset password token")
 		return
-	} else {
-		w.Write([]byte("Valid link, proceed to reset password"))
+	}
+
+	data := make(map[string]interface{})
+	data["email"] = r.URL.Query().Get("email")
+
+	if err := app.renderTemplate(w, r, "reset-password", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+		return
 	}
 }
