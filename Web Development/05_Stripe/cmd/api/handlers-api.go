@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ashparshp/go-stripe/internal/cards"
+	"github.com/ashparshp/go-stripe/internal/encryption"
 	"github.com/ashparshp/go-stripe/internal/models"
 	"github.com/ashparshp/go-stripe/internal/urlsigner"
 	"github.com/go-chi/chi/v5"
@@ -493,7 +494,19 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := app.DB.GetUserByEmail(payload.Email)
+	encryptor := encryption.Encryption{
+		Key: []byte(app.config.secretkey),
+	}
+
+	// Decrypt the email
+	decryptedEmail, err := encryptor.Decrypt(payload.Email)
+	if err != nil {
+		app.errorLog.Println("Error decrypting email:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	user, err := app.DB.GetUserByEmail(decryptedEmail)
 	if err != nil {
 		app.invalidCredentials(w)
 		return
