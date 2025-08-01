@@ -1,0 +1,35 @@
+package handlers
+
+import (
+	"net/http"
+
+	"github.com/CloudyKit/jet/v6"
+)
+
+var views = jet.NewSet(
+	jet.NewOSFileSystemLoader("./html"),
+	jet.InDevelopmentMode(),
+)
+
+// Home renders the home page
+func Home(w http.ResponseWriter, r *http.Request) {
+	err := renderPage(w, "home.jet", nil)
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+}
+
+// renderPage renders a Jet template
+func renderPage(w http.ResponseWriter, tmpl string, data jet.VarMap) error {
+	view, err := views.GetTemplate(tmpl)
+	if err != nil {
+		return err
+	}
+
+	err = view.Execute(w, data, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
