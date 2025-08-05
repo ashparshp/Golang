@@ -462,6 +462,8 @@ func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
 	stringMap["cancel"] = "/admin/all-sales"
 	stringMap["refund_url"] = "/api/admin/refund"
 	stringMap["refund_btn"] = "Refund Order"
+	stringMap["refunded_badge"] = "Refunded"
+	stringMap["refunded_message"] = "This order has been refunded!"
 	if err := app.renderTemplate(w, r, "sale-details", &templateData{
 		StringMap: stringMap,
 	}); err != nil {
@@ -476,6 +478,8 @@ func (app *application) SubscriptionDetails(w http.ResponseWriter, r *http.Reque
 	stringMap["cancel"] = "/admin/all-subscriptions"
 	stringMap["refund_url"] = "/api/admin/cancel-subscription"
 	stringMap["refund_btn"] = "Cancel Subscription"
+	stringMap["refunded_badge"] = "Cancelled"
+	stringMap["refunded_message"] = "This subscription has been cancelled!"
 	if err := app.renderTemplate(w, r, "sale-details", &templateData{
 		StringMap: stringMap,
 	}); err != nil {

@@ -8,7 +8,7 @@
     <h2 class="mt-5">Sale</h2>
     <hr>
     <div class="alert alert-danger text-center d-none" id="message"></div>
-    <span id="refunded" class="badge bg-danger d-none">Refunded</span>
+    <span id="refunded" class="badge bg-danger d-none">{{index .StringMap "refunded_badge"}}</span>
     <span id="paid" class="badge bg-success d-none">Paid</span>
     <hr>
 
@@ -103,7 +103,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, refund it!'
+        confirmButtonText: '{{index .StringMap "refund_btn"}}',
     }).then((result) => {
         if (result.isConfirmed) {
             let payload = {
@@ -128,8 +128,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
             .then(function (data) {
                 console.log("refund response:", data);
                 if (!data.error) {
-                    console.log("Refund successful");
-                    showSuccess("Refund successful!");
+                    showSuccess('{{index .StringMap "refunded_message"}}');
                     document.getElementById("refund-btn").classList.add("d-none");
                     document.getElementById("refunded").classList.remove("d-none");
                     document.getElementById("paid").classList.add("d-none");
