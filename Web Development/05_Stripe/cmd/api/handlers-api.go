@@ -616,7 +616,7 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 		Message string `json:"message"`
 	}
 	resp.Error = false
-	resp.Message = fmt.Sprintf("Refund of %d %s processed successfully for payment intent %s", chargeToRefund.Amount, chargeToRefund.Currency, chargeToRefund.PaymentIntent)
+	resp.Message = "Charge refunded"
 	err = app.writeJSON(w, http.StatusOK, resp)
 	if err != nil {
 		app.errorLog.Println("Error writing response:", err)

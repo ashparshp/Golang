@@ -30,9 +30,9 @@
 {{define "js"}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+let token = localStorage.getItem("token");
+let id = window.location.pathname.split("/").pop();
 document.addEventListener("DOMContentLoaded", function() {
-    let token = localStorage.getItem("token");
-    let id = window.location.pathname.split("/").pop();
     const requestOptions = {
         method: 'post',
         headers: {
@@ -80,10 +80,10 @@ document.getElementById("refund-btn").addEventListener("click", function() {
     }).then((result) => {
         if (result.isConfirmed) {
             let payload = {
-                pi: document.getElementById("pi").value,
+                payment_intent: document.getElementById("pi").value,
                 amount: parseInt(document.getElementById("charge_amount").value, 10),
                 currency: document.getElementById("currency").value,
-                id: parseInt(document.getElementById("order-no").innerHTML, 10),
+                id: parseInt(id, 10),
             }
 
             const requestOptions = {
@@ -91,7 +91,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem("token"),
+                    'Authorization': 'Bearer ' + token,
                 },
                 body: JSON.stringify(payload),
             }
@@ -100,32 +100,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
             .then(response => response.json())
             .then(function (data) {
                 console.log(data);
-                if (data.success) {
-                    swal.fire({
-                        title: 'Refund Successful',
-                        text: 'The order has been refunded successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = '{{index .StringMap "cancel"}}';
-                    });
-                } else {
-                    swal.fire({
-                        title: 'Refund Failed',
-                        text: data.error || 'An error occurred while processing the refund.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                swal.fire({
-                    title: 'Refund Failed',
-                    text: 'An error occurred while processing the refund.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+                
             });
         }
     });
