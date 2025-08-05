@@ -84,10 +84,10 @@
 
             // Status cell
             let statusCell = newRow.insertCell();
-            if (sale.status_id === 1) {
-                statusCell.innerHTML = `<span class="badge bg-success">Paid</span>`;
+            if (sale.status_id === 2) {
+                statusCell.innerHTML = `<span class="badge bg-danger">Paid</span>`;
             } else {
-                statusCell.innerHTML = `<span class="badge bg-danger">Refunded</span>`;
+                statusCell.innerHTML = `<span class="badge bg-success">Refunded</span>`;
             }
         })
     })
