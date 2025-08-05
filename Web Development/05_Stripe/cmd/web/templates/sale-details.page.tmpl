@@ -19,12 +19,16 @@
     <hr>
 
     <a class="btn btn-info" href='{{index .StringMap "cancel"}}'>Cancel</a>
-    <a class="btn btn-warning" href="#!">Refund Order</a>
+    <a id="refund-btn" class="btn btn-warning" href="#!">Refund Order</a>
 
+    <input type="hidden" id="pi" value="">
+    <input type="hidden" id="charge_amount" value="">
+    <input type="hidden" id="currency" value="">
 
 {{end}}
 
 {{define "js"}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     let token = localStorage.getItem("token");
@@ -49,6 +53,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("product").innerHTML = data.widget.name;
             document.getElementById("quantity").innerHTML = data.quantity;
             document.getElementById("amount").innerHTML = formatCurrency(data.transaction.amount);
+            document.getElementById("pi").value = data.transaction.payment_intent;
+            document.getElementById("charge_amount").value = data.transaction.amount;
+            document.getElementById("currency").value = data.transaction.currency;
         }
     })
 })
@@ -60,5 +67,68 @@ function formatCurrency(amount) {
         currency: 'CAD',
     })
 }
+
+document.getElementById("refund-btn").addEventListener("click", function() {
+    swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, refund it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            let payload = {
+                pi: document.getElementById("pi").value,
+                amount: parseInt(document.getElementById("charge_amount").value, 10),
+                currency: document.getElementById("currency").value,
+                id: parseInt(document.getElementById("order-no").innerHTML, 10),
+            }
+
+            const requestOptions = {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem("token"),
+                },
+                body: JSON.stringify(payload),
+            }
+
+            fetch("{{.API}}/api/admin/refund", requestOptions)
+            .then(response => response.json())
+            .then(function (data) {
+                console.log(data);
+                if (data.success) {
+                    swal.fire({
+                        title: 'Refund Successful',
+                        text: 'The order has been refunded successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '{{index .StringMap "cancel"}}';
+                    });
+                } else {
+                    swal.fire({
+                        title: 'Refund Failed',
+                        text: data.error || 'An error occurred while processing the refund.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                swal.fire({
+                    title: 'Refund Failed',
+                    text: 'An error occurred while processing the refund.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        }
+    });
+});
 </script>
 {{end}}
