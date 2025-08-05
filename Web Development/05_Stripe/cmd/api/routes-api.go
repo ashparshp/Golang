@@ -28,7 +28,6 @@ func (app *application) routes() http.Handler {
 	mux.Post("/api/forgot-password", app.SendPasswordResetEmail)
 	mux.Post("/api/reset-password", app.ResetPassword)
 
-
 	mux.Route("/api/admin", func(mux chi.Router) {
 		mux.Use(app.Auth)
 
@@ -37,6 +36,7 @@ func (app *application) routes() http.Handler {
 		})
 
 		mux.Post("/virtual-terminal-succeeded", app.VirtualTerminalPaymentSucceeded)
+		mux.Post("/all-sales", app.AllSales)
 	})
 
 	return mux
