@@ -1,7 +1,7 @@
 {{template "base" .}}
 
 {{define "title"}}
-    Sale
+    {{index .StringMap "title"}}
 {{end}}
 
 {{define "content"}}
@@ -18,7 +18,7 @@
 
     <hr>
 
-    <a class="btn btn-info" href="/admin/all-sales">Cancel</a>
+    <a class="btn btn-info" href='{{index .StringMap "cancel"}}'>Cancel</a>
     <a class="btn btn-warning" href="#!">Refund Order</a>
 
 

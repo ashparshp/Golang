@@ -457,7 +457,24 @@ func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request)
 
 // SaleDetails displays the details of a specific sale
 func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
-	if err := app.renderTemplate(w, r, "sale-details", &templateData{}); err != nil {
+	stringMap := make(map[string]string)
+	stringMap["title"] = "Sale Details"
+	stringMap["cancel"] = "/admin/all-sales"
+	if err := app.renderTemplate(w, r, "sale-details", &templateData{
+		StringMap: stringMap,
+	}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
+
+// SubscriptionDetails displays the details of a specific subscription
+func (app *application) SubscriptionDetails(w http.ResponseWriter, r *http.Request) {
+	stringMap := make(map[string]string)
+	stringMap["title"] = "Subscription Details"
+	stringMap["cancel"] = "/admin/all-subscriptions"
+	if err := app.renderTemplate(w, r, "sale-details", &templateData{
+		StringMap: stringMap,
+	}); err != nil {
 		app.errorLog.Println(err)
 	}
 }
