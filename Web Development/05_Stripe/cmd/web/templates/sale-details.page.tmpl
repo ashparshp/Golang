@@ -123,7 +123,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
                 body: JSON.stringify(payload),
             }
 
-            fetch("{{.API}}{{index .StringMap 'refund_url'}}", requestOptions)
+            fetch('{{.API}}{{index .StringMap "refund_url"}}', requestOptions)
             .then(response => response.json())
             .then(function (data) {
                 console.log("refund response:", data);
