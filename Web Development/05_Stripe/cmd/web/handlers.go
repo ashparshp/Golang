@@ -439,3 +439,19 @@ func (app *application) ShowResetPassword(w http.ResponseWriter, r *http.Request
 		return
 	}
 }
+
+// AllSales displays the all sales page
+func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
+
+	if err := app.renderTemplate(w, r, "all-sales", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
+
+// AllSubscriptions displays the all subscriptions page
+func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request) {
+
+	if err := app.renderTemplate(w, r, "all-subscriptions", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
