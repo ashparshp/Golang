@@ -520,3 +520,21 @@ func (m *DBModel) GetSaleDetails(id int) (Order, error) {
 
 	return o, nil
 }
+
+func (m *DBModel) UpdateOrderStatus(orderID, statusID int) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	stmt := `
+		update orders 
+		set status_id = ?, updated_at = ?
+		where id = ?
+	`
+
+	_, err := m.DB.ExecContext(ctx, stmt, statusID, orderID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

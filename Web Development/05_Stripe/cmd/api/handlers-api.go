@@ -609,12 +609,13 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// // Update order status to refunded (status 2)
-	// err = app.DB.UpdateOrderStatus(chargeToRefund.ID, 2)
-	// if err != nil {
-	// 	app.errorLog.Println("Error updating order status:", err)
-	// 	// Don't fail the request if we can't update the status
-	// }
+	// Update order status to refunded (status 2)
+	err = app.DB.UpdateOrderStatus(chargeToRefund.ID, 2)
+	if err != nil {
+		app.errorLog.Println("Error updating order status:", err)
+		app.badRequest(w, r, errors.New("error updating order status to refunded in database"))
+		return
+	}
 
 	var resp struct {
 		Error   bool   `json:"error"`
