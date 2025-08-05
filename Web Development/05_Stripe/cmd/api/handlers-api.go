@@ -543,14 +543,39 @@ func (app *application) ResetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
-	allSales, err := app.DB.GetAllOrders()
+	var payload struct {
+		PageSize    int `json:"page_size"`
+		CurrentPage int `json:"page"`
+	}
+
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	allSales, lastPage, totalRecords, err := app.DB.GetAllOrdersPaginated(payload.CurrentPage, payload.PageSize)
 	if err != nil {
 		app.errorLog.Println("Error retrieving all sales:", err)
 		app.badRequest(w, r, err)
 		return
 	}
 
-	app.writeJSON(w, http.StatusOK, allSales)
+	var response struct {
+		CurrentPage  int            `json:"current_page"`
+		PageSize     int            `json:"page_size"`
+		LastPage     int            `json:"last_page"`
+		TotalRecords int            `json:"total_records"`
+		Orders       []models.Order `json:"orders"`
+	}
+
+	response.CurrentPage = payload.CurrentPage
+	response.PageSize = payload.PageSize
+	response.LastPage = lastPage
+	response.TotalRecords = totalRecords
+	response.Orders = allSales
+
+	app.writeJSON(w, http.StatusOK, response)
 }
 
 func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request) {
@@ -633,7 +658,7 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 // CancelSubscription cancels a subscription by its ID
 func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	var subToCancel struct {
-		ID            int `json:"id"`
+		ID            int    `json:"id"`
 		PaymentIntent string `json:"payment_intent"`
 		Currency      string `json:"currency"`
 	}
