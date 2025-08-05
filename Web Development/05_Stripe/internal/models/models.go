@@ -531,7 +531,7 @@ func (m *DBModel) UpdateOrderStatus(orderID, statusID int) error {
 		where id = ?
 	`
 
-	_, err := m.DB.ExecContext(ctx, stmt, statusID, orderID)
+	_, err := m.DB.ExecContext(ctx, stmt, statusID, time.Now(), orderID)
 	if err != nil {
 		return err
 	}
