@@ -39,26 +39,30 @@
 
     fetch("{{.API}}/api/admin/all-sales", requestOptions)
     .then(response => response.json())
-    .then(function (data) {
-        console.log(data);
+    .then(function (salesData) {
+        console.log(salesData);
 
-        data.forEach(function(i) {
+        salesData.forEach(function(sale) {
             let newRow = tbody.insertRow();
-            let newCell = newRow.insertCell();
+            
+            // Transaction cell
+            let transactionCell = newRow.insertCell();
+            transactionCell.innerHTML = `<a href="/admin/sales/${sale.id}">Order ${sale.id}</a>`;
 
-            newCell.innerHTML = `<a href="/admin/sales/${i.id}">Order ${i.id}</a>`;
+            // Customer cell
+            let customerCell = newRow.insertCell();
+            let customerName = document.createTextNode(sale.customer.last_name + ", " + sale.customer.first_name);
+            customerCell.appendChild(customerName);
 
-            newCell = newRow.insertCell();
-            let item = document.createTextNode(i.customer.last_name + ", " + i.customer.first_name);
-            newCell.appendChild(item);
+            // Product cell
+            let productCell = newRow.insertCell();
+            let productName = document.createTextNode(sale.widget.name);
+            productCell.appendChild(productName);
 
-            newCell = newRow.insertCell();
-            item = document.createTextNode(i.widget.name);
-            newCell.appendChild(item);
-
-            newCell = newRow.insertCell();
-            item = document.createTextNode(i.transaction.amount);
-            newCell.appendChild(item);
+            // Amount cell
+            let amountCell = newRow.insertCell();
+            let amountText = document.createTextNode(sale.transaction.amount);
+            amountCell.appendChild(amountText);
         })
     })
 </script>
