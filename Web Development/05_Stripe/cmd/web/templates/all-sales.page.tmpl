@@ -28,6 +28,14 @@
     let token = localStorage.getItem("token");
     let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0];
 
+    function formatCurrency(amount) {
+        let c = parseFloat(amount/100);
+        return c.toLocaleString('en-CA', {
+            style: 'currency',
+            currency: 'CAD',
+        });
+    }
+
     const requestOptions = {
         method: 'post',
         headers: {
@@ -42,6 +50,14 @@
     .then(function (salesData) {
         console.log(salesData);
 
+        if (!salesData || salesData.length === 0) {
+            let newRow = tbody.insertRow();
+            let cell = newRow.insertCell();
+            cell.colSpan = 4;
+            cell.textContent = "No sales data available.";
+            return;
+        }
+
         salesData.forEach(function(sale) {
             let newRow = tbody.insertRow();
             
@@ -51,7 +67,7 @@
 
             // Customer cell
             let customerCell = newRow.insertCell();
-            let customerName = document.createTextNode(sale.customer.last_name + ", " + sale.customer.first_name);
+            let customerName = document.createTextNode(sale.customer.first_name + " " + sale.customer.last_name);
             customerCell.appendChild(customerName);
 
             // Product cell
@@ -60,6 +76,7 @@
             productCell.appendChild(productName);
 
             // Amount cell
+            sale.transaction.amount = formatCurrency(sale.transaction.amount);
             let amountCell = newRow.insertCell();
             let amountText = document.createTextNode(sale.transaction.amount);
             amountCell.appendChild(amountText);
