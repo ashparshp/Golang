@@ -552,3 +552,14 @@ func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, allSales)
 }
+
+func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request) {
+	allSubscriptions, err := app.DB.GetAllSubscriptions()
+	if err != nil {
+		app.errorLog.Println("Error retrieving all subscriptions:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, allSubscriptions)
+}
