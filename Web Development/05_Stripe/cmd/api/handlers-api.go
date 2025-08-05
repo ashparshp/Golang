@@ -582,3 +582,44 @@ func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
 
 	app.writeJSON(w, http.StatusOK, saleDetails)
 }
+
+func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
+	var chargeToRefund struct {
+		ID            int    `json:"id"`
+		PaymentIntent string `json:"payment_intent"`
+		Amount        int    `json:"amount"`
+		Currency      string `json:"currency"`
+	}
+
+	// validate the request body
+
+	card := cards.Card{
+		Secret: app.config.stripe.secret,
+		Key:    app.config.stripe.key,
+	}
+
+	err := app.readJSON(w, r, &chargeToRefund)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	err = card.Refund(chargeToRefund.PaymentIntent, chargeToRefund.Amount)
+	if err != nil {
+		app.errorLog.Println("Error processing refund:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+	resp.Error = false
+	resp.Message = fmt.Sprintf("Refund of %d %s processed successfully for payment intent %s", chargeToRefund.Amount, chargeToRefund.Currency, chargeToRefund.PaymentIntent)
+	err = app.writeJSON(w, http.StatusOK, resp)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
