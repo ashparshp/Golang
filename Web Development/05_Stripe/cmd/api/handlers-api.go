@@ -629,3 +629,50 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// CancelSubscription cancels a subscription by its ID
+func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Request) {
+	var subToCancel struct {
+		ID            int `json:"id"`
+		PaymentIntent string `json:"payment_intent"`
+		Currency      string `json:"currency"`
+	}
+
+	err := app.readJSON(w, r, &subToCancel)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+	card := cards.Card{
+		Secret:   app.config.stripe.secret,
+		Key:      app.config.stripe.key,
+		Currency: subToCancel.Currency,
+	}
+
+	err = card.CancelSubscription(subToCancel.PaymentIntent)
+	if err != nil {
+		app.errorLog.Println("Error canceling subscription:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	// Update subscription status to canceled (status 3)
+	err = app.DB.UpdateOrderStatus(subToCancel.ID, 3)
+	if err != nil {
+		app.errorLog.Println("Error updating subscription status:", err)
+		app.badRequest(w, r, errors.New("error updating subscription status to canceled in database"))
+		return
+	}
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+	resp.Message = "Subscription canceled successfully"
+	err = app.writeJSON(w, http.StatusOK, resp)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
