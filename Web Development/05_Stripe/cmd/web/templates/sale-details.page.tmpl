@@ -7,6 +7,11 @@
 {{define "content"}}
     <h2 class="mt-5">Sale</h2>
     <hr>
+    <div class="alert alert-danger text-center d-none" id="message"></div>
+    <span id="refunded" class="badge bg-danger d-none">Refunded</span>
+    <span id="paid" class="badge bg-success d-none">Paid</span>
+    <hr>
+
     <div>
         <strong>Order No:</strong> <span id="order-no"></span><br>
         <strong>Customer:</strong> <span id="customer"></span><br>
@@ -19,7 +24,7 @@
     <hr>
 
     <a class="btn btn-info" href='{{index .StringMap "cancel"}}'>Cancel</a>
-    <a id="refund-btn" class="btn btn-warning" href="#!">Refund Order</a>
+    <a id="refund-btn" class="btn btn-warning d-none" href="#!">Refund Order</a>
 
     <input type="hidden" id="pi" value="">
     <input type="hidden" id="charge_amount" value="">
@@ -32,6 +37,22 @@
 <script>
 let token = localStorage.getItem("token");
 let id = window.location.pathname.split("/").pop();
+
+let message = document.getElementById("message");
+
+
+function showError(msg) {
+    message.classList.remove("d-none");
+    message.textContent = msg;
+}
+
+function showSuccess(msg) {
+    message.classList.remove("d-none");
+    message.classList.add("alert-success");
+    message.classList.remove("alert-danger");
+    message.textContent = msg;
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     const requestOptions = {
         method: 'post',
@@ -56,6 +77,12 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("pi").value = data.transaction.payment_intent;
             document.getElementById("charge_amount").value = data.transaction.amount;
             document.getElementById("currency").value = data.transaction.currency;
+            if (data.status_id != 1) {
+                document.getElementById("refunded").classList.remove("d-none");
+            } else {
+                document.getElementById("refund-btn").classList.remove("d-none");
+                document.getElementById("paid").classList.remove("d-none");
+            }
         }
     })
 })
@@ -99,8 +126,19 @@ document.getElementById("refund-btn").addEventListener("click", function() {
             fetch("{{.API}}/api/admin/refund", requestOptions)
             .then(response => response.json())
             .then(function (data) {
-                console.log(data);
-                
+                console.log("refund response:", data);
+                if (!data.error) {
+                    console.log("Refund successful");
+                    showSuccess("Refund successful!");
+                    document.getElementById("refund-btn").classList.add("d-none");
+                    document.getElementById("refunded").classList.remove("d-none");
+                    document.getElementById("paid").classList.add("d-none");
+                    setTimeout(() => {
+                        window.location.href = '{{index .StringMap "cancel"}}';
+                    }, 2000);
+                } else {
+                    showError("Refund failed: " + data.message);
+                }
             });
         }
     });

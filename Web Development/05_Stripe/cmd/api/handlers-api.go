@@ -591,8 +591,6 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 		Currency      string `json:"currency"`
 	}
 
-	// validate the request body
-
 	card := cards.Card{
 		Secret: app.config.stripe.secret,
 		Key:    app.config.stripe.key,
@@ -610,6 +608,13 @@ func (app *application) RefundCharge(w http.ResponseWriter, r *http.Request) {
 		app.badRequest(w, r, err)
 		return
 	}
+
+	// // Update order status to refunded (status 2)
+	// err = app.DB.UpdateOrderStatus(chargeToRefund.ID, 2)
+	// if err != nil {
+	// 	app.errorLog.Println("Error updating order status:", err)
+	// 	// Don't fail the request if we can't update the status
+	// }
 
 	var resp struct {
 		Error   bool   `json:"error"`
