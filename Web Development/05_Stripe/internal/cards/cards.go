@@ -119,7 +119,7 @@ func (c *Card) CreateCustomer(pm, email string) (*stripe.Customer, string, error
 	return cust, "", nil
 }
 
-// Refund attempts to refund a payment intent
+// Refund processes a refund for a given payment intent
 func (c *Card) Refund(pi string, amount int) error {
 	stripe.Key = c.Secret
 	amountToRefund := int64(amount)
