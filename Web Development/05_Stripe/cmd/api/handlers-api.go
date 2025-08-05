@@ -563,3 +563,22 @@ func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request)
 
 	app.writeJSON(w, http.StatusOK, allSubscriptions)
 }
+
+func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	saleID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorLog.Println("Error converting sale ID:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	saleDetails, err := app.DB.GetSaleDetails(saleID)
+	if err != nil {
+		app.errorLog.Println("Error retrieving sale details:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	app.writeJSON(w, http.StatusOK, saleDetails)
+}

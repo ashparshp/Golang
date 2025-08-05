@@ -450,8 +450,14 @@ func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
 
 // AllSubscriptions displays the all subscriptions page
 func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request) {
-
 	if err := app.renderTemplate(w, r, "all-subscriptions", &templateData{}); err != nil {
+		app.errorLog.Println(err)
+	}
+}
+
+// SaleDetails displays the details of a specific sale
+func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
+	if err := app.renderTemplate(w, r, "sale-details", &templateData{}); err != nil {
 		app.errorLog.Println(err)
 	}
 }
