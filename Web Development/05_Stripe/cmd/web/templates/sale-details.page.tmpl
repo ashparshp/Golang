@@ -24,7 +24,7 @@
     <hr>
 
     <a class="btn btn-info" href='{{index .StringMap "cancel"}}'>Cancel</a>
-    <a id="refund-btn" class="btn btn-warning d-none" href="#!">Refund Order</a>
+    <a id="refund-btn" class="btn btn-warning d-none" href="#!">{{index .StringMap "refund_btn"}}</a>
 
     <input type="hidden" id="pi" value="">
     <input type="hidden" id="charge_amount" value="">
@@ -123,7 +123,7 @@ document.getElementById("refund-btn").addEventListener("click", function() {
                 body: JSON.stringify(payload),
             }
 
-            fetch("{{.API}}/api/admin/refund", requestOptions)
+            fetch("{{.API}}{{index .StringMap 'refund_url'}}", requestOptions)
             .then(response => response.json())
             .then(function (data) {
                 console.log("refund response:", data);
