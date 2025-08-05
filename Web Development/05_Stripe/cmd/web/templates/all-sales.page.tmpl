@@ -15,6 +15,7 @@
                 <th>Customer</th>
                 <th>Product</th>
                 <th>Amount</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -80,6 +81,14 @@
             let amountCell = newRow.insertCell();
             let amountText = document.createTextNode(sale.transaction.amount);
             amountCell.appendChild(amountText);
+
+            // Status cell
+            let statusCell = newRow.insertCell();
+            if (i.status_id != 1) {
+                statusCell.innerHTML = `<span class="badge bg-danger">Refunded</span>`;
+            } else {
+                statusCell.innerHTML = `<span class="badge bg-success">Paid</span>`;
+            }
         })
     })
 </script>
