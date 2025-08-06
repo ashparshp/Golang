@@ -579,12 +579,37 @@ func (app *application) AllSales(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request) {
-	allSubscriptions, err := app.DB.GetAllSubscriptions()
+	var payload struct {
+		PageSize    int `json:"page_size"`
+		CurrentPage int `json:"current_page"`
+	}
+
+	err := app.readJSON(w, r, &payload)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	allSubscriptions, lastPage, totalRecords, err := app.DB.GetAllSubscriptionsPaginated(payload.CurrentPage, payload.PageSize)
 	if err != nil {
 		app.errorLog.Println("Error retrieving all subscriptions:", err)
 		app.badRequest(w, r, err)
 		return
 	}
+
+	var response struct {
+		CurrentPage  int            `json:"current_page"`
+		PageSize     int            `json:"page_size"`
+		LastPage     int            `json:"last_page"`
+		TotalRecords int            `json:"total_records"`
+		Orders       []models.Order `json:"orders"`
+	}
+
+	response.CurrentPage = payload.CurrentPage
+	response.PageSize = payload.PageSize
+	response.LastPage = lastPage
+	response.TotalRecords = totalRecords
+	response.Orders = allSubscriptions
 
 	app.writeJSON(w, http.StatusOK, allSubscriptions)
 }
