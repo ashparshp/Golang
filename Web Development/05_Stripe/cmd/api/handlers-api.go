@@ -726,3 +726,19 @@ func (app *application) CancelSubscription(w http.ResponseWriter, r *http.Reques
 		return
 	}
 }
+
+// AllUsers retrieves all users from the database
+func (app *application) AllUsers(w http.ResponseWriter, r *http.Request) {
+	allUsers, err := app.DB.GetAllUsers()
+	if err != nil {
+		app.errorLog.Println("Error retrieving all users:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, allUsers)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
