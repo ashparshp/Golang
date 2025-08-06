@@ -34,8 +34,8 @@ func main() {
 
 	flag.IntVar(&cfg.port, "port", 5001, "Server port to listen on")
 	flag.StringVar(&cfg.smtp.host, "smtphost", "smtp.mailtrap.io", "smtp host")
-	flag.StringVar(&cfg.smtp.username, "smtpuser", "30980d8770302b02e", "smtp user")
-	flag.StringVar(&cfg.smtp.password, "smtppass", "33c58457afcc76", "smtp password")
+	flag.StringVar(&cfg.smtp.username, "smtpuser", "6d564414364e81", "SMTP username")
+	flag.StringVar(&cfg.smtp.password, "smtppass", "ae7b490b8b1e5e", "SMTP password")
 	flag.IntVar(&cfg.smtp.port, "smtpport", 587, "smtp port")
 	flag.StringVar(&cfg.frontend, "frontend", "http://localhost:4000", "url to front end")
 
