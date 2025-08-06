@@ -45,13 +45,13 @@ let pageSize = 2;
 
 function updatePagination(pageSize, currentPage) {
     let pagimator = document.getElementById("pagimator");
-    let html = `<li class="page-item"><a class="page-link pager" href="#" data-page="${currentPage - 1}">&lt;</a></li>`;
+    let html = `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage - 1}">&lt;</a></li>`;
 
     for (let i = 0; i <= pageSize; i++) {
-        html += `<li class="page-item"><a class="page-link pager" href="#" data-page="${i + 1}">${i + 1}</a></li>`;
+        html += `<li class="page-item"><a class="page-link pager" href="#!" data-page="${i + 1}">${i + 1}</a></li>`;
     }
 
-    html += `<li class="page-item"><a class="page-link pager" href="#" data-page="${currentPage + 1}">&gt;</a></li>`;
+    html += `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage + 1}">&gt;</a></li>`;
 
     pagimator.innerHTML = html;
 
