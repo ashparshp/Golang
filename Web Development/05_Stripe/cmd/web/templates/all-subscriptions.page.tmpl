@@ -108,7 +108,7 @@ function updateTable(ps, cp) {
                     newCell.innerHTML = `<span class="badge bg-success">Active</span>`;
                 }
             })
-            updatePagination(salesData.last_page, salesData.current_page);
+            updatePagination(data.last_page, data.current_page);
         } else {
             let newRow = tbody.insertRow();
             let newCell = newRow.insertCell();
