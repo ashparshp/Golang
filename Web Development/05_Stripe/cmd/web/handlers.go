@@ -204,7 +204,7 @@ func (app *application) PaymentSucceeded(w http.ResponseWriter, r *http.Request)
 
 // callInvoiceMicro calls the invoice microservice to create and send an invoice
 func (app *application) callInvoiceMicro(inv Invoice) error {
-	url := "http://localhost:5000/invoice/create-and-send"
+	url := "http://localhost:5001/invoice/create-and-send"
 	out, err := json.MarshalIndent(inv, "", "\t")
 	if err != nil {
 		return err
