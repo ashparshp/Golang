@@ -55,7 +55,7 @@ function updatePagination(pageSize, currentPage) {
 
     pagimator.innerHTML = html;
 
-    let pagerLinks = document.getElementsByClassName(".pager");
+    let pagerLinks = document.getElementsByClassName("pager");
     for (let i = 0; i < pagerLinks.length; i++) {
         pagerLinks[i].addEventListener("click", function(event) {
             event.preventDefault();
