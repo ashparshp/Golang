@@ -24,23 +24,23 @@ func (app *application) CreateAndSendInvoice(w http.ResponseWriter, r *http.Requ
 	// receive json
 	var order Order
 
-	err := app.readJSON(w, r, &order)
-	if err != nil {
-		app.badRequest(w, r, err)
-		return
-	}
+	// err := app.readJSON(w, r, &order)
+	// if err != nil {
+	// 	app.badRequest(w, r, err)
+	// 	return
+	// }
 
-	// order.ID = 100
-	// order.Email = "me@here.com"
-	// order.FirstName = "John"
-	// order.LastName = "Smith"
-	// order.Quantity = 1
-	// order.Amount = 1000
-	// order.Product = "Widget"
-	// order.CreatedAt = time.Now()
+	order.ID = 100
+	order.Email = "me@here.com"
+	order.FirstName = "John"
+	order.LastName = "Smith"
+	order.Quantity = 1
+	order.Amount = 1000
+	order.Product = "Widget"
+	order.CreatedAt = time.Now()
 
 	// generate a pdf invoice
-	err = app.createInvoicePDF(order)
+	err := app.createInvoicePDF(order)
 	if err != nil {
 		app.badRequest(w, r, err)
 		return
