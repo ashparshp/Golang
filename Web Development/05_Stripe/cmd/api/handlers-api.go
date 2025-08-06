@@ -14,6 +14,7 @@ import (
 	"github.com/ashparshp/go-stripe/internal/encryption"
 	"github.com/ashparshp/go-stripe/internal/models"
 	"github.com/ashparshp/go-stripe/internal/urlsigner"
+	"github.com/ashparshp/go-stripe/internal/validator"
 	"github.com/go-chi/chi/v5"
 	"github.com/stripe/stripe-go/v72"
 	"golang.org/x/crypto/bcrypt"
@@ -133,6 +134,15 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		app.errorLog.Println(err)
+		return
+	}
+
+	// validate data
+	v := validator.New()
+	v.Check(len(data.FirstName) > 1, "first_name", "must be at least 2 characters")
+
+	if !v.Valid() {
+		app.failedValidation(w, r, v.Errors)
 		return
 	}
 
