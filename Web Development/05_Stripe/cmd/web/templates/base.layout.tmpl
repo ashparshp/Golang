@@ -112,6 +112,8 @@
 
     socket.onopen = () => {
       console.log("Successfully connected to websockets");
+      // Validate current user when connecting
+      validateCurrentUser();
     }
 
     socket.onclose = event => { };
@@ -132,6 +134,37 @@
     }
 
   })
+
+  function validateCurrentUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      }
+    };
+    
+    fetch("{{.API}}/api/is-authenticated", requestOptions)
+    .then(response => {
+      if (response.status === 401 || response.status === 403) {
+        logout();
+        return;
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data && data.error === true) {
+        logout();
+      }
+    })
+    .catch(error => {
+      console.log("Error validating user:", error);
+    });
+  }
   {{end}}
 
     function logout() {
