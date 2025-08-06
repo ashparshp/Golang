@@ -742,3 +742,25 @@ func (app *application) AllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// OneUser retrieves a single user by ID
+func (app *application) OneUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorLog.Println("Error converting user ID:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+	user, err := app.DB.GetOneUser(userID)
+	if err != nil {
+		app.errorLog.Println("Error retrieving user:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+	err = app.writeJSON(w, http.StatusOK, user)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
