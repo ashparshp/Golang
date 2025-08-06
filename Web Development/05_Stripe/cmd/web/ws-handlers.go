@@ -94,6 +94,7 @@ func (app *application) ListenToWsChannel() {
 		case "deleteUser":
 			response.Action = "logout"
 			response.Message = "Your account has been deleted"
+			response.UserID = e.UserID
 			app.broadcastToAllClients(response)
 		default:
 		}
