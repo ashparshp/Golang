@@ -71,6 +71,8 @@ function updateTable(ps, cp) {
     let token = localStorage.getItem("token");
     let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0];
 
+    tbody.innerHTML = "";
+
     let body = {
        page_size: parseInt(ps, 10),
        current_page: parseInt(cp, 10),
