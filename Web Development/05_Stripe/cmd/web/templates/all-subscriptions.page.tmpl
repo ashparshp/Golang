@@ -83,8 +83,8 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(response => response.json())
     .then(function (data) {
         console.log(data);
-        if (data) {
-            data.forEach(function(i) {
+        if (data.orders) {
+            data.orders.forEach(function(i) {
                 let newRow = tbody.insertRow();
                 let newCell = newRow.insertCell();
                 newCell.innerHTML = `<a href="/admin/subscriptions/${i.id}">Order ${i.id}</a>`;
