@@ -23,7 +23,7 @@
         </tbody>
     </table>
     <nav aria-label="Page navigation">
-        <ul id="pagimator" class="pagination">
+        <ul id="paginator" class="pagination">
 
         </ul>
     </nav>
@@ -44,7 +44,7 @@ let currentPage = 1;
 let pageSize = 2;
 
 function updatePagination(pageSize, currentPage) {
-    let pagimator = document.getElementById("pagimator");
+    let paginator = document.getElementById("paginator");
     let html = `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage - 1}">&lt;</a></li>`;
 
     for (let i = 0; i <= pageSize; i++) {
@@ -53,7 +53,7 @@ function updatePagination(pageSize, currentPage) {
 
     html += `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage + 1}">&gt;</a></li>`;
 
-    pagimator.innerHTML = html;
+    paginator.innerHTML = html;
 
     let pagerLinks = document.getElementsByClassName("pager");
     for (let i = 0; i < pagerLinks.length; i++) {
