@@ -738,3 +738,50 @@ func (m *DBModel) UpdateOrderStatus(orderID, statusID int) error {
 
 	return nil
 }
+
+// GetAllUsers retrieves all users from the database
+func (m *DBModel) GetAllUsers() ([]User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var users []User
+
+	query := `
+		select 
+			id, first_name, last_name, email, created_at, updated_at
+		from 
+			users
+		order by 
+			first_name, last_name
+	`
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var u User
+
+		err := rows.Scan(
+			&u.ID,
+			&u.FirstName,
+			&u.LastName,
+			&u.Email,
+			&u.CreatedAt,
+			&u.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, u)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
