@@ -20,10 +20,52 @@
 
     </tbody>
     </table>
+
+    <nav>
+        <ul id="paginator" class="pagination">
+
+        </ul>
+    </nav>
 {{end}}
 
 {{define "js"}}
 <script>
+
+function formatCurrency(amount) {
+    let c = parseFloat(amount / 100);
+    return c.toLocaleString('en-CA', {
+        style: 'currency',
+        currency: 'CAD',
+    });
+}
+
+let currentPage = 1;
+let pageSize = 5;
+
+function updatePagination(pageSize, currentPage) {
+    let paginator = document.getElementById("paginator");
+    let html = `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage - 1}">&lt;</a></li>`;
+
+    for (let i = 0; i <= pageSize; i++) {
+        html += `<li class="page-item"><a class="page-link pager" href="#!" data-page="${i + 1}">${i + 1}</a></li>`;
+    }
+
+    html += `<li class="page-item"><a class="page-link pager" href="#!" data-page="${currentPage + 1}">&gt;</a></li>`;
+
+    paginator.innerHTML = html;
+
+    let pagerLinks = document.getElementsByClassName("pager");
+    for (let i = 0; i < pagerLinks.length; i++) {
+        pagerLinks[i].addEventListener("click", function(event) {
+            event.preventDefault();
+            let desiredPage = event.target.getAttribute("data-page");
+            if (desiredPage > 0 && desiredPage <= pageSize + 1) {
+                updateTable(pageSize, desiredPage);
+            }
+        });
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     let token = localStorage.getItem("token");
     let tbody = document.getElementById('sales-table').getElementsByTagName('tbody')[0];
