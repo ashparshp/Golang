@@ -15,14 +15,14 @@ type WSPayload struct {
 	Message     string              `json:"message"`
 	UserName    string              `json:"username"`
 	MessageType string              `json:"message_type"`
-	UserID      string              `json:"user_id"`
+	UserID      int                 `json:"user_id"`
 	Conn        WebSocketConnection `json:"-"`
 }
 
 type WSJsonResponse struct {
 	Action  string `json:"action"`
 	Message string `json:"message"`
-	UserID  string `json:"user_id"`
+	UserID  int    `json:"user_id"`
 }
 
 var upgrader = websocket.Upgrader{
