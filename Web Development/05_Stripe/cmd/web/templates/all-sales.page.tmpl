@@ -41,7 +41,7 @@ function formatCurrency(amount) {
 }
 
 let currentPage = 1;
-let pageSize = 3;
+let pageSize = 2;
 
 function updatePagination(pageSize, currentPage) {
     let pagimator = document.getElementById("pagimator");
@@ -54,6 +54,17 @@ function updatePagination(pageSize, currentPage) {
     html += `<li class="page-item"><a class="page-link pager" href="#" data-page="${currentPage + 1}">&gt;</a></li>`;
 
     pagimator.innerHTML = html;
+
+    let pagerLinks = document.getElementsByClassName(".pager");
+    for (let i = 0; i < pagerLinks.length; i++) {
+        pagerLinks[i].addEventListener("click", function(event) {
+            event.preventDefault();
+            let desiredPage = event.target.getAttribute("data-page");
+            id (desiredPage > 0 && desiredPage <= pageSize + 1) {
+                updateTable(pageSize, desiredPage);
+            }
+        });
+    }
 }
 
 function updateTable(ps, cp) {
