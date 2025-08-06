@@ -775,7 +775,7 @@ func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user models.User
-	
+
 	err = app.readJSON(w, r, &user)
 	if err != nil {
 		app.badRequest(w, r, err)
@@ -814,7 +814,7 @@ func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		user.Password = string(hashedPassword)
-		userID, err = app.DB.AddUser(user, user.Password)
+		err = app.DB.AddUser(user, user.Password)
 		if err != nil {
 			app.errorLog.Println("Error inserting user:", err)
 			app.badRequest(w, r, err)
