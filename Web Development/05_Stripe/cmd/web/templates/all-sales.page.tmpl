@@ -22,6 +22,11 @@
 
         </tbody>
     </table>
+    <nav aria-label="Page navigation">
+        <ul id="pagimator" class="pagination">
+
+        </ul>
+    </nav>
 {{end}}
 
 {{define "js"}}
@@ -37,6 +42,19 @@ function formatCurrency(amount) {
 
 let currentPage = 1;
 let pageSize = 3;
+
+function updatePagination(pageSize, currentPage) {
+    let pagimator = document.getElementById("pagimator");
+    let html = `<li class="page-item"><a class="page-link pager" href="#" data-page="${currentPage - 1}">&lt;</a></li>`;
+
+    for (let i = 0; i <= pageSize; i++) {
+        html += `<li class="page-item"><a class="page-link pager" href="#" data-page="${i + 1}">${i + 1}</a></li>`;
+    }
+
+    html += `<li class="page-item"><a class="page-link pager" href="#" data-page="${currentPage + 1}">&gt;</a></li>`;
+
+    pagimator.innerHTML = html;
+}
 
 function updateTable(ps, cp) {
     let token = localStorage.getItem("token");
@@ -101,6 +119,7 @@ function updateTable(ps, cp) {
                 statusCell.innerHTML = `<span class="badge bg-success">Refunded</span>`;
             }
         })
+        updatePagination(salesData.last_page, salesData.current_page);
     })
 }
 
