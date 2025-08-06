@@ -244,7 +244,7 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 
 // callInvoiceMicro calls the invoicing microservice
 func (app *application) callInvoiceMicro(inv Invoice) error {
-	url := "http://localhost:5000/invoice/create-and-send"
+	url := "http://localhost:5001/invoice/create-and-send"
 	out, err := json.MarshalIndent(inv, "", "\t")
 	if err != nil {
 		return err
