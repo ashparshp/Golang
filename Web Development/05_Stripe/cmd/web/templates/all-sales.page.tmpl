@@ -60,7 +60,7 @@ function updatePagination(pageSize, currentPage) {
         pagerLinks[i].addEventListener("click", function(event) {
             event.preventDefault();
             let desiredPage = event.target.getAttribute("data-page");
-            id (desiredPage > 0 && desiredPage <= pageSize + 1) {
+            if (desiredPage > 0 && desiredPage <= pageSize + 1) {
                 updateTable(pageSize, desiredPage);
             }
         });
