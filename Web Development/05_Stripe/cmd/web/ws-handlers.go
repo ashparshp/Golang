@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -43,7 +42,6 @@ func (app *application) WsEndPoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.infoLog.Printf("Client connected from %s", r.RemoteAddr)
 	var response WsJsonResponse
 	response.Message = "Connected to server"
 
@@ -104,5 +102,7 @@ func (app *application) broadcastToAll(response WsJsonResponse) {
 			_ = client.Close()
 			delete(clients, client)
 		}
+	}
+}
 	}
 }

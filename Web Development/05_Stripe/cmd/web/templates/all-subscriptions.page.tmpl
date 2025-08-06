@@ -96,7 +96,6 @@ function updateTable(ps, cp) {
     fetch("{{.API}}/api/admin/all-subscriptions", requestOptions)
     .then(response => response.json())
     .then(function (data) {
-        console.log(data);
         if (data.orders) {
             data.orders.forEach(function(i) {
                 let newRow = tbody.insertRow();

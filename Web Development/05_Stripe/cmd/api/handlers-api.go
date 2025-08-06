@@ -136,8 +136,6 @@ func (app *application) CreateCustomerAndSubscribeToPlan(w http.ResponseWriter, 
 		return
 	}
 
-	app.infoLog.Println(data.Email, data.LastFour, data.PaymentMethod, data.Plan)
-
 	card := cards.Card{
 		Secret:   app.config.stripe.secret,
 		Key:      app.config.stripe.key,

@@ -127,7 +127,6 @@ document.addEventListener("DOMContentLoaded", function() {
         fetch('{{.API}}/api/admin/all-users/' + id, requestOptions)
         .then(response => response.json())
         .then(function (data) {
-            console.log(data);
             if (data) {
                 document.getElementById("first_name").value = data.first_name;
                 document.getElementById("last_name").value = data.last_name;
