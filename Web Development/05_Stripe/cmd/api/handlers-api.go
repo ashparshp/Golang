@@ -611,7 +611,7 @@ func (app *application) AllSubscriptions(w http.ResponseWriter, r *http.Request)
 	response.TotalRecords = totalRecords
 	response.Orders = allSubscriptions
 
-	app.writeJSON(w, http.StatusOK, allSubscriptions)
+	app.writeJSON(w, http.StatusOK, response)
 }
 
 func (app *application) SaleDetails(w http.ResponseWriter, r *http.Request) {
