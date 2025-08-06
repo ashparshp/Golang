@@ -785,3 +785,36 @@ func (m *DBModel) GetAllUsers() ([]User, error) {
 
 	return users, nil
 }
+
+// GetOneUser retrieves a single user by ID
+func (m *DBModel) GetOneUser(id int) (User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var u User
+
+	query := `
+		select 
+			id, first_name, last_name, email, created_at, updated_at
+		from 
+			users
+		where 
+			id = ?
+	`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+
+	if err != nil {
+		return u, err
+	}
+
+	return u, nil
+}
