@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch("{{.API}}/api/admin/all-users", requestOptions)
     .then(response => response.json())
     .then(function (data) {        
-        console.log(data);
         if (data) {
             data.forEach(function(i) {
                 let newRow = tbody.insertRow();
