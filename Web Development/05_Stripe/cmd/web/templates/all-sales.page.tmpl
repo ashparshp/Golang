@@ -30,13 +30,13 @@
 let currentPage = 1;
 let pageSize = 3;
 
-document.addEventListener("DOMContentLoaded", function() {
+function updateTable(ps, cp) {
     let token = localStorage.getItem("token");
     let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0];
 
     let body = {
-       page_size: pageSize,
-       current_page: currentPage,
+       page_size: ps,
+       current_page: cp,
     }
 
     function formatCurrency(amount) {
@@ -102,6 +102,10 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
     })
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    
 });
 </script>
 {{end}}
