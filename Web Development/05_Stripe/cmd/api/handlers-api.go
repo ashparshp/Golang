@@ -833,3 +833,31 @@ func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// DeleteUser deletes a user by ID
+func (app *application) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorLog.Println("Error converting user ID:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+	err = app.DB.DeleteUser(userID)
+	if err != nil {
+		app.errorLog.Println("Error deleting user:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+	resp.Error = false
+	resp.Message = fmt.Sprintf("User with ID %d deleted successfully", userID)
+	err = app.writeJSON(w, http.StatusOK, resp)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
