@@ -91,6 +91,7 @@ function updateTable(ps, cp) {
     fetch("{{.API}}/api/admin/all-sales", requestOptions)
     .then(response => response.json())
     .then(function (salesData) {
+        console.log(salesData);
 
         if (!salesData.orders || salesData.orders.length === 0) {
             let newRow = tbody.insertRow();
