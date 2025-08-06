@@ -72,8 +72,8 @@ function updateTable(ps, cp) {
     let tbody = document.getElementById("sales-table").getElementsByTagName("tbody")[0];
 
     let body = {
-       page_size: ps,
-       current_page: cp,
+       page_size: parseInt(ps, 10),
+       current_page: parseInt(cp, 10),
     }
 
     const requestOptions = {
@@ -94,7 +94,7 @@ function updateTable(ps, cp) {
         if (!salesData.orders || salesData.orders.length === 0) {
             let newRow = tbody.insertRow();
             let cell = newRow.insertCell();
-            cell.colSpan = 4;
+            cell.colSpan = 5;
             cell.textContent = "No sales data available.";
             return;
         }
