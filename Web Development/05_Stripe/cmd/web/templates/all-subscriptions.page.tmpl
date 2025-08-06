@@ -30,15 +30,7 @@
 
 {{define "js"}}
 <script>
-
-function formatCurrency(amount) {
-    let c = parseFloat(amount / 100);
-    return c.toLocaleString('en-CA', {
-        style: 'currency',
-        currency: 'CAD',
-    });
-}
-
+    
 let currentPage = 1;
 let pageSize = 5;
 
@@ -116,15 +108,14 @@ document.addEventListener("DOMContentLoaded", function() {
             newCell.innerHTML = `No data available`;
         }
     })
-
-    function formatCurrency(amount) {
-        let c = parseFloat(amount / 100);
-        return c.toLocaleString("en-CA", {
-            style: 'currency',
-            currency: 'CAD',
-        })
-    }
-
 })
+
+function formatCurrency(amount) {
+    let c = parseFloat(amount / 100);
+    return c.toLocaleString("en-CA", {
+        style: 'currency',
+        currency: 'CAD',
+    })
+}
 </script>
 {{end}}
