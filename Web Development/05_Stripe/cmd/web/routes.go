@@ -32,7 +32,7 @@ func (app *application) routes() http.Handler {
 	mux.Get("/receipt", app.Receipt)
 
 	mux.Get("/plans/bronze", app.BronzePlan)
-	mux.Get("/reciept/bronze", app.BronzePlanReceipt)
+	mux.Get("/receipt/bronze", app.BronzePlanReceipt)
 
 	// auth routes
 	mux.Get("/login", app.LoginPage)

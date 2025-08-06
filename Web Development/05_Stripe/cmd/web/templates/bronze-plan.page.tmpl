@@ -162,20 +162,31 @@ Bronze Plan
                 };
 
                 fetch("{{.API}}/api/create-customer-and-subscribe-to-plan", requestOptions)
-                    .then(response => response.json())
-                    .then(function(data) {
-                        console.log(data);
+                .then(response => response.json())
+                .then(function(data) {
+                    if (data.error === false) {
                         processing.classList.add("d-none");
                         showCardSuccess();
-
-                        sessionStorage.first_name = document.getElementById("first-name").value;
+                        sessionStorage.first_name = document.getElementById("first_name").value;
                         sessionStorage.last_name = document.getElementById("last-name").value;
                         sessionStorage.amount = "{{formatCurrency $widget.Price}}";
-                        sessionStorage.email = document.getElementById("cardholder-email").value;
                         sessionStorage.last_four = result.paymentMethod.card.last4;
 
-                        location.href = "/reciept/bronze";
-                    });
+                        location.href = "/receipt/bronze";
+                    } else {
+                        document.getElementById("charge_form").classList.remove("was-validated");
+
+                        Object.entries(data.errors).forEach((i) => {
+                            const [key, value] = i;
+                            console.log(`${key}: ${value}`);
+                            document.getElementById(key).classList.add("is-invalid");
+                            document.getElementById(key + "-help").classList.remove("valid-feedback");
+                            document.getElementById(key + "-help").classList.add("invalid-feedback");
+                            document.getElementById(key + "-help").innerText = value;
+                        })
+                        showPayButtons();
+                    }
+                })
             }
         }
 
