@@ -764,3 +764,72 @@ func (app *application) OneUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// EditUser updates a user's details
+func (app *application) EditUser(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	userID, err := strconv.Atoi(id)
+	if err != nil {
+		app.errorLog.Println("Error converting user ID:", err)
+		app.badRequest(w, r, err)
+		return
+	}
+	var user models.User
+	
+	err = app.readJSON(w, r, &user)
+	if err != nil {
+		app.badRequest(w, r, err)
+		return
+	}
+
+	if userID > 0 {
+		app.DB.EditUser(user)
+		if err != nil {
+			app.errorLog.Println("Error updating user:", err)
+			app.badRequest(w, r, err)
+			return
+		}
+
+		if user.Password != "" {
+			hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+			if err != nil {
+				app.errorLog.Println("Error hashing password:", err)
+				app.badRequest(w, r, err)
+				return
+			}
+			user.Password = string(hashedPassword)
+		}
+		err = app.DB.UpdateUserPassword(user, user.Password)
+		if err != nil {
+			app.errorLog.Println("Error updating user password:", err)
+			app.badRequest(w, r, err)
+			return
+		}
+	} else {
+		// Create a new user
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+		if err != nil {
+			app.errorLog.Println("Error hashing password:", err)
+			app.badRequest(w, r, err)
+			return
+		}
+		user.Password = string(hashedPassword)
+		userID, err = app.DB.AddUser(user, user.Password)
+		if err != nil {
+			app.errorLog.Println("Error inserting user:", err)
+			app.badRequest(w, r, err)
+			return
+		}
+	}
+	var resp struct {
+		Error   bool   `json:"error"`
+		Message string `json:"message"`
+	}
+
+	resp.Error = false
+	err = app.writeJSON(w, http.StatusOK, resp)
+	if err != nil {
+		app.errorLog.Println("Error writing response:", err)
+		return
+	}
+}
