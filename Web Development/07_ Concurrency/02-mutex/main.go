@@ -1,9 +1,10 @@
 package main
 
-import (
-	"fmt"
-	"sync"
-)
+/* This code demonstrates the use of a mutex to safely update a shared variable
+   from multiple goroutines. The `updateMessage` function locks the mutex before
+   updating the shared variable `msg`, ensuring that only one goroutine can modify
+   `msg` at a time. This is crucial to avoid the race condition that can occur
+   when multiple goroutines attempt to read and write to the same variable concurrently.
 
 var msg string
 var wg sync.WaitGroup
@@ -28,6 +29,7 @@ func main() {
 
 	fmt.Println(msg)
 }
+*/
 
 /* This may not work as expected due to race conditions.
    The variable 'msg' is being updated by multiple goroutines
