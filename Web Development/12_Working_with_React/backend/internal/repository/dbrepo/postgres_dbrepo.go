@@ -4,33 +4,46 @@ import (
 	"backend/internal/models"
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
+// PostgresDBRepo is the struct used to wrap our database connection pool, so that we
+// can easily swap out a real database for a test database, or move to another database
+// entirely, as long as the thing being swapped implements all of the functions in the type
+// repository.DatabaseRepo.
 type PostgresDBRepo struct {
 	DB *sql.DB
 }
 
 const dbTimeout = time.Second * 3
 
+// Connection returns underlying connection pool.
 func (m *PostgresDBRepo) Connection() *sql.DB {
 	return m.DB
 }
 
-func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
+// AllMovies returns a slice of movies, sorted by name. If the optional parameter genre
+// is supplied, then only all movies for a particular genre is returned.
+func (m *PostgresDBRepo) AllMovies(genre ...int) ([]*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
 
-	query := `
+	where := ""
+	if len(genre) > 0 {
+		where = fmt.Sprintf("where id in (select movie_id from movies_genres where genre_id = %d)", genre[0])
+	}
+
+	query := fmt.Sprintf(`
 		select
 			id, title, release_date, runtime,
 			mpaa_rating, description, coalesce(image, ''),
 			created_at, updated_at
 		from
-			movies
+			movies %s
 		order by
 			title
-	`
+	`, where)
 
 	rows, err := m.DB.QueryContext(ctx, query)
 	if err != nil {
@@ -63,6 +76,7 @@ func (m *PostgresDBRepo) AllMovies() ([]*models.Movie, error) {
 	return movies, nil
 }
 
+// OneMovie returns a single movie and associated genres, if any.
 func (m *PostgresDBRepo) OneMovie(id int) (*models.Movie, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -122,6 +136,7 @@ func (m *PostgresDBRepo) OneMovie(id int) (*models.Movie, error) {
 	return &movie, err
 }
 
+// OneMovieForEdit returns a single movie and associated genres, if any, for edit.
 func (m *PostgresDBRepo) OneMovieForEdit(id int) (*models.Movie, []*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -204,10 +219,10 @@ func (m *PostgresDBRepo) OneMovieForEdit(id int) (*models.Movie, []*models.Genre
 		allGenres = append(allGenres, &g)
 	}
 
-
 	return &movie, allGenres, err
 }
 
+// GetUserByEmail returns one use, by email.
 func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -235,6 +250,7 @@ func (m *PostgresDBRepo) GetUserByEmail(email string) (*models.User, error) {
 	return &user, nil
 }
 
+// GetUserByID returns one use, by ID.
 func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -262,6 +278,7 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 	return &user, nil
 }
 
+// AllGenres returns a slice of genres, sorted by name.
 func (m *PostgresDBRepo) AllGenres() ([]*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -294,6 +311,7 @@ func (m *PostgresDBRepo) AllGenres() ([]*models.Genre, error) {
 	return genres, nil
 }
 
+// InsertMovie inserts one movie into the database.
 func (m *PostgresDBRepo) InsertMovie(movie models.Movie) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -322,6 +340,7 @@ func (m *PostgresDBRepo) InsertMovie(movie models.Movie) (int, error) {
 	return newID, nil
 }
 
+// UpdateMovie updates one movie in the database.
 func (m *PostgresDBRepo) UpdateMovie(movie models.Movie) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -348,6 +367,8 @@ func (m *PostgresDBRepo) UpdateMovie(movie models.Movie) error {
 	return nil
 }
 
+// UpdateMovieGenres first deletes all genres associated with a movie, and
+// then inserts the ones stored in genreIDs.
 func (m *PostgresDBRepo) UpdateMovieGenres(id int, genreIDs []int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
@@ -370,6 +391,7 @@ func (m *PostgresDBRepo) UpdateMovieGenres(id int, genreIDs []int) error {
 	return nil
 }
 
+// DeleteMovie deletes one movie, by id.
 func (m *PostgresDBRepo) DeleteMovie(id int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
