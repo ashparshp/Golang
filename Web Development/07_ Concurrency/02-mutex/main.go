@@ -35,7 +35,7 @@ func main() {
    The variable 'msg' is being updated by multiple goroutines
    without synchronization, which can lead to unpredictable results.
    To fix this, we can use a mutex to ensure that only one goroutine
-   can update 'msg' at a time.
+   can update 'msg' at a time. (go run -race .)
 
 var msg string
 var wg sync.WaitGroup
